@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-  "start": "node index.js",  
+  "start": "node app.js",  
   "build": "npm install",   
-  "dev": "nodemon index.js" 
+  "dev": "nodemon app.js" 
   }
 ,
   "keywords": [],
