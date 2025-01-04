@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const dbkey = require('./config/dbkey');
-
+const dbkey = process.env.DB_KEY;
 const createCategory = require('./routes/create.route');
 const categoryRoute = require('./routes/category.route');
 const app = express();
@@ -14,7 +13,8 @@ app.use('/api/create', createCategory);
 
 mongoose
   .connect(
-    'mongodb+srv://lr29freelancer:'+dbkey+'@backenddb.thles.mongodb.net/Node-API?retryWrites=true&w=majority&appName=BackendDB'
+    'mongodb+srv://lr29freelancer:oaemRemYERh1icNF@backenddb.thles.mongodb.net/Node-API?retryWrites=true&w=majority&appName=BackendDB'
+    
   )
   .then(() => {
     console.log('Connected to database');
