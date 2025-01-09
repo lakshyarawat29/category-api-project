@@ -1,13 +1,12 @@
-const Category = require("../models/category.model");
-const programmingLanguages = require('../directory/langs'); 
-
+const Category = require('../models/category.model');
+const programmingLanguages = require('../directory/langs');
 
 const getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find({});
 
     // Filter sensitive fields for each category
-    const filteredCategories = categories.map(category => {
+    const filteredCategories = categories.map((category) => {
       const filtered = category.toJSON();
       delete filtered._id;
       delete filtered.updatedAt;
@@ -22,21 +21,22 @@ const getAllCategories = async (req, res) => {
   }
 };
 
-const createCategory = async(req,res)=>{
-  try{
-    const product = await Category.create(req.body)
+const createCategory = async (req, res) => {
+  try {
+    const product = await Category.create(req.body);
     res.status(200).json(product);
     console.log(product);
-  }catch(error){
-    res.status(500).json({message: error.message});
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-}
-
+};
 
 const createManyCategory = async (req, res) => {
   try {
     if (!Array.isArray(req.body)) {
-      return res.status(400).json({ message: "Input should be an array of categories." });
+      return res
+        .status(400)
+        .json({ message: 'Input should be an array of categories.' });
     }
     const categories = await Category.insertMany(req.body);
     res.status(201).json(categories);
@@ -45,15 +45,30 @@ const createManyCategory = async (req, res) => {
   }
 };
 
-
+const deleteAllCategories = async (req, res) => {
+  try {
+    // Delete all entries from the category collection
+    const result = await Category.deleteMany({});
+    res.status(200).json({
+      message: 'All categories deleted successfully',
+      result: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: 'Error deleting categories',
+      error: err.message,
+    });
+  }
+};
 
 const getOneCategory = async (req, res) => {
   try {
-    const { name } = req.params;  // Get the 'name' from the URL parameter
+    const { name } = req.params; // Get the 'name' from the URL parameter
     console.log(`Searching for category: ${name}`);
 
     // Check if the name is a valid programming language
-    if (!programmingLanguages.includes(name.toLowerCase())) { // Convert input to lowercase for consistency
+    if (!programmingLanguages.includes(name.toLowerCase())) {
+      // Convert input to lowercase for consistency
       return res.status(400).json({ message: 'No Results Found' });
     }
 
@@ -62,16 +77,20 @@ const getOneCategory = async (req, res) => {
     console.log(`Escaped name for regex: ${escapedName}`);
 
     // Check if the category exists using case-insensitive regex
-    let category = await Category.findOne({ name: new RegExp(`^${escapedName}$`, 'i') });
+    let category = await Category.findOne({
+      name: new RegExp(`^${escapedName}$`, 'i'),
+    });
 
-    console.log(`Found category: ${category ? category.name : 'No category found'}`);
+    console.log(
+      `Found category: ${category ? category.name : 'No category found'}`
+    );
 
     if (!category) {
       // If the category doesn't exist, create the category dynamically
       category = new Category({
         name: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize first letter
-        devType: 'Unknown',  // Default or allow user to send it
-        icon: 'https://png.pngtree.com/png-vector/20210129/ourmid/pngtree-upload-avatar-by-default-png-image_2854358.jpg'  // Fallback icon
+        devType: 'Unknown', // Default or allow user to send it
+        icon: 'https://png.pngtree.com/png-vector/20210129/ourmid/pngtree-upload-avatar-by-default-png-image_2854358.jpg', // Fallback icon
       });
 
       await category.save(); // Save the new category in the database
@@ -91,6 +110,10 @@ const getOneCategory = async (req, res) => {
   }
 };
 
-
-
-module.exports = {getAllCategories,createCategory,getOneCategory,createManyCategory}
+module.exports = {
+  getAllCategories,
+  createCategory,
+  getOneCategory,
+  createManyCategory,
+  deleteAllCategories,
+};
